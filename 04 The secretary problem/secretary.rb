@@ -3,8 +3,10 @@ class SecretaryProblem
     @size = size
   end
 
+  # Task A. 
+  # Let P(n, k) be the success probability of the strategy of observing the first k diamonds
+  # out of n diamonds. Design an algorithm that computes P (n, k) for all k = 1,2, ... , n in O(n) time.
   def build_subsolutions
-    #Pr(k), probability of success with a given k
     @success_probability = Array.new(@size)
     @success_probability[@size-1] = 1.0/@size
     (@size-1).downto(1).each { |k|
@@ -18,6 +20,11 @@ class SecretaryProblem
     probabilities.reverse.each {|line| puts line}
   end
 
+  # Task B.  
+  # Note that the answer to (A) is naturally an O(n) time algorithm to compute the optimal
+  # k for a given n. But if you repeat this for every n = 1, ... , N, it takes O(n^2) time to
+  # compute the optimal k for every n. Try to design an O(N log N) time algorithm or an
+  # O(N) time algorithm to compute the optimal k for all n = 1, 2, ... , N.
   def calculate_optimal_k
     k=0
     @k_optimal = Array.new(@size)

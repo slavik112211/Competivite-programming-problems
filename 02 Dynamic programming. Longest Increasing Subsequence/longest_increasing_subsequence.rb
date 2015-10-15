@@ -1,6 +1,8 @@
 require 'byebug'
 I = Float::INFINITY
 
+# http://informatics.mccme.ru/mod/book/view.php?id=488
+
 class LongestIncreasingSubsequence
   attr_reader :subsolutions, :solution
   attr_accessor :sequence
