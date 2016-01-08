@@ -1,0 +1,8 @@
+To add additional source folders to Eclipse:
+
+1. Create a folder;
+2. Project -> Properties -> Java Build Path -> Source -> Add Folder (checkmark close to the folder);
+3. Could also be done through modifying .classpath:
+    <classpathentry kind="src" path="14 PermutationsCalculator"/>
+    
+4. Specify another Main class in the Run configuration.
