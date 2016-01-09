@@ -30,7 +30,6 @@ public class PermutationsFinder<T> {
 			findPermutations(currentPermutation, currentSublist+1);
 			currentPermutation.remove(currentPermutation.size()-1);
 		}
-		return;
 	}
 	
 	public ArrayList<T> next(){
