@@ -28,8 +28,7 @@ public class PermutationsFinderUsingPointers<T> {
 	
 	public ArrayList<T> next(){
 		ArrayList<T> permutation = new ArrayList<T>();
-		boolean pointerIncremented = incrementPointer(sublistPointers.length-1);
-//		boolean pointerIncremented = incrementPointerIterative();
+		boolean pointerIncremented = incrementPointer(sublistPointers.length-1); // or incrementPointerIterative()
 		if(!pointerIncremented) return permutation;
 		
 		for(int i=0; i<input.size(); i++)
