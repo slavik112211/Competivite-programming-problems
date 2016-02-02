@@ -19,7 +19,7 @@ public class SortedList
     
     while(!positionFound){
         if(insertedNode.value>=prevNode.value &&
-        	(prevNode.next==null || (prevNode.next!=null && insertedNode.value<=prevNode.next.value))){
+        	(prevNode.next==start || (prevNode.next!=start && insertedNode.value<=prevNode.next.value))){
         	positionFound=true;
         	break;
         }else{
@@ -28,11 +28,13 @@ public class SortedList
     }
     if(prevNode==null){
         insertedNode.next=start;
+        CNode lastNode=start;
+        while(lastNode.next!=start) lastNode=lastNode.next;
+        lastNode.next=insertedNode;
     }else{
         nextNode = prevNode.next;
         prevNode.next=insertedNode;
         insertedNode.next=nextNode;
-        
     }
     return insertedNode;
   }
@@ -41,12 +43,12 @@ public class SortedList
   public static void main(String[] args){
 	  SortedList sortedList = new SortedList();
 	  CNode start = new CNode(1);
+	  start.next=start;
 	  sortedList.insertSortedList(start, 3);
 	  sortedList.insertSortedList(start, 4);
 	  sortedList.insertSortedList(start, 5);
 	  sortedList.insertSortedList(start, 0);
 	  sortedList.insertSortedList(start, 2);
-	  
   }
 }
 
