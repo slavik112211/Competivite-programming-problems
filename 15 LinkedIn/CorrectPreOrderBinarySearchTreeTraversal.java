@@ -29,7 +29,7 @@ public class CorrectPreOrderBinarySearchTreeTraversal {
     	ArrayList<Integer> testCase;
        for(int i=0;i<input.size();i++){
     	   testCase = input.get(i);
-    	   boolean validPreOrderBSTTraversal = determineBSTValidityForTree(testCase, 0, 1, testCase.size()-1);
+    	   boolean validPreOrderBSTTraversal = checkBST(testCase);//determineBSTValidityForTree(testCase, 0, 1, testCase.size()-1);
     	   answers[i] = (validPreOrderBSTTraversal) ? yes : no;
        }
     }
@@ -108,6 +108,22 @@ public class CorrectPreOrderBinarySearchTreeTraversal {
         determineBSTValidity();
         //printInputValues();
         printAnswers();
+    }
+    
+    //from http://www.snippetexample.com/2015/03/verify-preorder-sequence-in-binary-search-tree/
+    static boolean checkBST(ArrayList<Integer> inOrderArray){
+        Stack<Integer> s = new Stack<Integer>();
+        int lower = -1;
+        for(int i=0;i<inOrderArray.size();i++){
+            if(lower>-1 && inOrderArray.get(i) < lower){
+                return false;
+            }
+            while(!s.isEmpty() && s.peek()<inOrderArray.get(i)){
+                lower = s.pop();
+            }
+            s.push(inOrderArray.get(i));
+        }
+        return true;
     }
 }
 
