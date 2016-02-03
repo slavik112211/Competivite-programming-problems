@@ -1,40 +1,24 @@
-// IMPORT LIBRARY PACKAGES NEEDED BY YOUR PROGRAM
-// SOME CLASSES WITHIN A PACKAGE MAY BE RESTRICTED
-// DEFINE ANY CLASS AND METHOD NEEDED
-// CNode CLASS IS DEFINED BY DEFAULT
-// CLASS BEGINS, THIS CLASS IS REQUIRED
 public class SortedList
 {
-  //METHOD SIGNATURE BEGINS, THIS METHOD IS REQUIRED
   public static CNode insertSortedList(CNode start, int n)
   {
     CNode insertedNode = new CNode(n);
     boolean positionFound = false;
-    CNode prevNode = start;
-    CNode nextNode;
-    if(insertedNode.value<=prevNode.value){
-        positionFound = true;
-        prevNode=null;
-    }
+    CNode prevNode = start, nextNode;
     
     while(!positionFound){
-        if(insertedNode.value>=prevNode.value &&
-        	(prevNode.next==start || (prevNode.next!=start && insertedNode.value<=prevNode.next.value))){
+    	if(prevNode.next==start){ //Either first node (smallest), or last node (largest)
+    		positionFound=true;
+        	prevNode.next=insertedNode;
+        	insertedNode.next=start;
+    	}else if(insertedNode.value>=prevNode.value && insertedNode.value<=prevNode.next.value){
         	positionFound=true;
-        	break;
+            nextNode = prevNode.next;
+            prevNode.next=insertedNode;
+            insertedNode.next=nextNode;
         }else{
             prevNode=prevNode.next;
         }
-    }
-    if(prevNode==null){
-        insertedNode.next=start;
-        CNode lastNode=start;
-        while(lastNode.next!=start) lastNode=lastNode.next;
-        lastNode.next=insertedNode;
-    }else{
-        nextNode = prevNode.next;
-        prevNode.next=insertedNode;
-        insertedNode.next=nextNode;
     }
     return insertedNode;
   }
