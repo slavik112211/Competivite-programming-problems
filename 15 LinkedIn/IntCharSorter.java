@@ -1,11 +1,20 @@
 package competivite_programming_problems;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class IntCharSorter
 {
+    public ArrayList<Element> inputList;
+    public IntCharSorter(){
+        this.inputList = new ArrayList<Element>();
+    }
+    public IntCharSorter(ArrayList<Element> inputList){
+        this.inputList = inputList;
+    }
+    
     public static class Element {
-        public enum Type {INTEGER, CHAR};
+        public enum Type {INTEGER, CHAR}
         public int number;
         public char character;
         public Boolean isNumber=false, isCharacter=false;
@@ -21,7 +30,7 @@ public class IntCharSorter
 
         public boolean isComparable(Element other){
             return (this.isNumber && other.isNumber) ||
-                    (this.isCharacter && other.isCharacter) ? true : false;
+                   (this.isCharacter && other.isCharacter) ? true : false;
         }
 
         public String toString(){
@@ -35,21 +44,22 @@ public class IntCharSorter
         }
     }
 
-    public ArrayList<Element> merge(ArrayList<Element> listA, ArrayList<Element> listB){
-        int totalSize = listA.size()+listB.size();
-        int i, resultArrayIndex=0, compareResult;
+    public void merge(int leftIndex, int middleIndex, int rightIndex){
+        int totalSize = rightIndex-leftIndex+1;
+        int i, resultArrayIndex=leftIndex, compareResult;
         Element leftEl1, leftEl2, rightEl1, rightEl2;
         ArrayList<Element> result = new ArrayList<Element>(totalSize);
         Element.Type currentPositionType;
-        int iteratorLeft1=0, iteratorLeft2=0, iteratorRight1=0, iteratorRight2=0;
+        int iteratorLeft1=leftIndex, iteratorLeft2=leftIndex;
+        int iteratorRight1=middleIndex+1, iteratorRight2=middleIndex+1;
 
-        while(resultArrayIndex<totalSize){
-            leftEl1  = (iteratorLeft1<listA.size())  ? listA.get(iteratorLeft1)  : null;
-            leftEl2  = (iteratorLeft2<listA.size())  ? listA.get(iteratorLeft2)  : null;
-            rightEl1 = (iteratorRight1<listB.size()) ? listB.get(iteratorRight1) : null;
-            rightEl2 = (iteratorRight2<listB.size()) ? listB.get(iteratorRight2) : null;
+        while(resultArrayIndex<=rightIndex){
+            leftEl1  = (iteratorLeft1<=middleIndex) ? inputList.get(iteratorLeft1)  : null;
+            leftEl2  = (iteratorLeft2<=middleIndex) ? inputList.get(iteratorLeft2)  : null;
+            rightEl1 = (iteratorRight1<=rightIndex) ? inputList.get(iteratorRight1) : null;
+            rightEl2 = (iteratorRight2<=rightIndex) ? inputList.get(iteratorRight2) : null;
 
-            currentPositionType=determinePositionType(resultArrayIndex,listA,listB);
+            currentPositionType=determinePositionType(resultArrayIndex);
             if(currentPositionType==Element.Type.INTEGER){
                 if(areBothNull(leftEl1, rightEl1)) break;
                 if(areNumbers(leftEl1, rightEl1) || oneIsNullAndOtherIsNumber(leftEl1, rightEl1)){
@@ -93,7 +103,9 @@ public class IntCharSorter
                 }
             }
         }
-        return result;
+        for(i=leftIndex;i<=rightIndex;i++){
+            inputList.set(i, result.get(i-leftIndex));
+        }
     }
 
     private static boolean areBothNull(Element left, Element right){
@@ -127,43 +139,40 @@ public class IntCharSorter
     }
     private static int compareElements(Element.Type type, Element left, Element right){
         int result=0;
-        if(left!=null && right==null){
-            result=-1;
-        }else if(left==null && right!=null){
-            result=1;
-        }else if((type==Element.Type.INTEGER && left.number<=right.number) ||
-                 (type==Element.Type.CHAR && left.character<=right.character)){
-            result=-1;
-        }else {
-            result=1;
-        }
+        if(left!=null && right==null) result=-1;
+        else if(left==null && right!=null) result=1;
+        else if((type==Element.Type.INTEGER && left.number<=right.number) ||
+                (type==Element.Type.CHAR && left.character<=right.character)) result=-1;
+        else result=1;
         return result;
     }
-    private static Element.Type determinePositionType(int index, ArrayList<Element> left, ArrayList<Element> right){
-        Element currentEl=(index<left.size()) ? left.get(index) : right.get(index-left.size());
-        return currentEl.isNumber ? Element.Type.INTEGER : Element.Type.CHAR;
+    private Element.Type determinePositionType(int index){
+        return inputList.get(index).isNumber ? Element.Type.INTEGER : Element.Type.CHAR;
+    }
+    
+    public void mergeSort(int leftIndex, int rightIndex) {
+        if(rightIndex<=leftIndex) return;
+        int middleIndex = leftIndex+(rightIndex-leftIndex)/2;
+        mergeSort(leftIndex, middleIndex);
+        mergeSort(middleIndex+1, rightIndex);
+        merge(leftIndex, middleIndex, rightIndex);
     }
     
     public static void main(String[] args){
-        ArrayList<Element> listA = new ArrayList<Element>();
-        listA.add(new Element('b'));
-        listA.add(new Element(4));
-        listA.add(new Element('c'));
-        listA.add(new Element(8));
-        listA.add(new Element('d'));
-        listA.add(new Element(9));
-
-        ArrayList<Element> listB = new ArrayList<Element>();
-        listB.add(new Element(2));
-        listB.add(new Element('a'));
-        listB.add(new Element(3));
-        listB.add(new Element(4));
-        listB.add(new Element('c'));
-
-        IntCharSorter sorter = new IntCharSorter();
-        ArrayList<Element> listC = sorter.merge(listA, listB);
-        System.out.println(listC);
+        Element[] elements = new Element[]{
+            new Element('b'), new Element(4), new Element('c'), new Element(8), new Element('d'), new Element(9),
+            new Element(2), new Element('a'), new Element(3), new Element(4),new Element('c')};
+        IntCharSorter sorter = new IntCharSorter(new ArrayList<Element>(Arrays.asList(elements)));
+        sorter.merge(0,5,sorter.inputList.size()-1);
+        System.out.println(sorter.inputList);
         //[a, 2, b, 3, c, 4, 4, c, 8, 9, d]
-
+        
+        Element[] elements2 = new Element[]{
+            new Element(8), new Element('c'), new Element(2), new Element('e'), new Element(3),
+            new Element('d'), new Element(4), new Element('b'), new Element('a')};
+        sorter.inputList = new ArrayList<Element>(Arrays.asList(elements2));
+        sorter.mergeSort(0,sorter.inputList.size()-1);
+        System.out.println(sorter.inputList);
+        //[2, a, 3, b, 4, c, 8, d, e]
     }
 }
