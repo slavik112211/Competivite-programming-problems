@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 public class IntCharSorter
 {
+    private Integer iteratorLeft1=0, iteratorLeft2=0, iteratorRight1=0, iteratorRight2=0;
     public static class Element {
+        public enum Type {INTEGER, CHAR}
         public int number;
         public char character;
         public Boolean isNumber=false, isCharacter=false;
+        
         public Element(int number){
             this.number = number;
             isNumber=true;
@@ -33,13 +36,13 @@ public class IntCharSorter
         }
     }
 
-    public static ArrayList<Element> merge(ArrayList<Element> listA, ArrayList<Element> listB){
+    public ArrayList<Element> merge(ArrayList<Element> listA, ArrayList<Element> listB){
         int totalSize = listA.size()+listB.size();
-        int i, resultArrayIndex=0;
+        int i, resultArrayIndex=0, compareResult;
         Element leftEl1, leftEl2, rightEl1, rightEl2;
         ArrayList<Element> result = new ArrayList<Element>(totalSize);
         boolean[] intPositions=new boolean[totalSize];
-        int iteratorLeft1=0, iteratorLeft2=0, iteratorRight1=0, iteratorRight2=0;
+        iteratorLeft1=0; iteratorLeft2=0; iteratorRight1=0; iteratorRight2=0;
 
         //1. Determine positions of int/char
         for(i=0; i<listA.size();i++){
@@ -60,10 +63,10 @@ public class IntCharSorter
 
             //1. Current position in result[] requires a number
             if(intPositions[resultArrayIndex]){
-                if((leftEl1==null    && rightEl1.isNumber) || 
-                   (leftEl1.isNumber && rightEl1==null)    ||
-                   (leftEl1.isNumber && rightEl1.isNumber)){
-                    if(rightEl1==null || leftEl1.number<=rightEl1.number){
+                if(areBothNull(leftEl1, rightEl1)) break;
+                if(areNumbers(leftEl1, rightEl1) || oneIsNullAndOtherIsNumber(leftEl1, rightEl1)){
+                    compareResult=compareElements(Element.Type.INTEGER, leftEl1, rightEl1);
+                    if(compareResult==-1){
                         result.add(leftEl1);
                         iteratorLeft1++;
                     }else{
@@ -71,20 +74,20 @@ public class IntCharSorter
                         iteratorRight1++;
                     }
                     resultArrayIndex++;
-                }else if((leftEl1==null || leftEl1.isNumber) && rightEl1.isCharacter){
+                }else if(leftIsNumberOrNullAndRightIsCharacter(leftEl1,rightEl1)){
                     iteratorRight1++;
-                }else if(leftEl1.isCharacter && (rightEl1==null || rightEl1.isNumber)){
+                }else if(leftIsCharacterAndRightIsNumberOrNull(leftEl1,rightEl1)){
                     iteratorLeft1++;
-                }else if(leftEl1.isCharacter && rightEl1.isCharacter){
+                }else if(areCharacters(leftEl1,rightEl1)){
                     iteratorLeft1++;
                     iteratorRight1++;
                 }
             }
             else{ //2. Current position in result[] requires a character
-                if((leftEl2.isCharacter && rightEl2 == null) ||
-                   (leftEl2 == null     && rightEl2.isCharacter) ||
-                   (leftEl2.isCharacter && rightEl2.isCharacter)){
-                    if(rightEl2==null || leftEl2.character<=rightEl2.character){
+                if(areBothNull(leftEl2, rightEl2)) break;
+                else if(areCharacters(leftEl2,rightEl2) || oneIsNullAndOtherIsCharacter(leftEl2,rightEl2)){
+                    compareResult=compareElements(Element.Type.CHAR, leftEl2, rightEl2);
+                    if(compareResult==-1){
                         result.add(leftEl2);
                         iteratorLeft2++;
                     }else{
@@ -92,11 +95,11 @@ public class IntCharSorter
                         iteratorRight2++;
                     }
                     resultArrayIndex++;
-                }else if(leftEl2.isNumber && (rightEl2==null || rightEl2.isCharacter)){
+                }else if(leftIsNumberAndRightIsCharacterOrNull(leftEl2,rightEl2)){
                     iteratorLeft2++;
-                }else if((leftEl2==null || leftEl2.isCharacter) && rightEl2.isNumber){
+                }else if(leftIsCharacterOrNullAndRightIsNumber(leftEl2,rightEl2)){
                     iteratorRight2++;
-                }else if(leftEl2.isNumber && rightEl2.isNumber){
+                }else if(areNumbers(leftEl2, rightEl2)){
                     iteratorLeft2++;
                     iteratorRight2++;
                 }
@@ -105,7 +108,50 @@ public class IntCharSorter
         return result;
     }
 
-
+    private static boolean areBothNull(Element left, Element right){
+        return (left==null && right==null)?true:false;
+    }
+    private static boolean areNumbers(Element left, Element right){
+        return (left!=null && right!=null && left.isNumber && right.isNumber)?true:false;
+    }
+    private static boolean areCharacters(Element left, Element right){
+        return (left!=null && right!=null && left.isCharacter && right.isCharacter)?true:false;
+    }
+    private static boolean oneIsNullAndOtherIsNumber(Element left, Element right){
+        return ((left==null && right!=null && right.isNumber) ||
+                (right==null && left!=null && left.isNumber))?true:false;
+    }
+    private static boolean oneIsNullAndOtherIsCharacter(Element left, Element right){
+        return ((left==null && right!=null && right.isCharacter) ||
+                (right==null && left!=null && left.isCharacter))?true:false;
+    }
+    private static boolean leftIsNumberOrNullAndRightIsCharacter(Element left, Element right){
+        return ((left==null || left.isNumber) && (right!=null && right.isCharacter))?true:false;
+    }
+    private static boolean leftIsNumberAndRightIsCharacterOrNull(Element left, Element right){
+        return ((left!=null && left.isNumber) && (right==null || right.isCharacter))?true:false;
+    }
+    private static boolean leftIsCharacterAndRightIsNumberOrNull(Element left, Element right){
+        return ((left!=null && left.isCharacter) && (right==null || right.isNumber))?true:false;
+    }
+    private static boolean leftIsCharacterOrNullAndRightIsNumber(Element left, Element right){
+        return ((left==null || left.isCharacter) && (right!=null && right.isNumber))?true:false;
+    }
+    private static int compareElements(Element.Type type, Element left, Element right){
+        int result=0;
+        if(left!=null && right==null){
+            result=-1;
+        }else if(left==null && right!=null){
+            result=1;
+        }else if((type==Element.Type.INTEGER && left.number<=right.number) ||
+                 (type==Element.Type.CHAR && left.character<=right.character)){
+            result=-1;
+        }else {
+            result=1;
+        }
+        return result;
+    }
+    
     public static void main(String[] args){
         ArrayList<Element> listA = new ArrayList<Element>();
         listA.add(new Element('b'));
@@ -122,7 +168,8 @@ public class IntCharSorter
         listB.add(new Element(4));
         listB.add(new Element('c'));
 
-        ArrayList<Element> listC = IntCharSorter.merge(listA, listB);
+        IntCharSorter sorter = new IntCharSorter();
+        ArrayList<Element> listC = sorter.merge(listA, listB);
         System.out.println(listC);
         //[a, 2, b, 3, c, 4, 4, c, 8, 9, d]
 

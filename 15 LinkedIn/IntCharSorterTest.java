@@ -14,12 +14,14 @@ public class IntCharSorterTest {
     ArrayList<Element> listC = new ArrayList<Element>();
     ArrayList<Element> result = new ArrayList<Element>();
     ArrayList<Element> sampleElements = new ArrayList<Element>();
+    IntCharSorter sorter;
 
     public IntCharSorterTest(){
         Element[] elems = new Element[]{
             new Element('a'), new Element('b'), new Element('c'), new Element('d'),
             new Element(1), new Element(2), new Element(3), new Element(4), new Element(8)};
         sampleElements=new ArrayList<Element>(Arrays.asList(elems));
+        sorter = new IntCharSorter();
     }
 
     @Before
@@ -32,7 +34,7 @@ public class IntCharSorterTest {
 
     @Test
     public void shouldMergeEmptyArrays() {
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         result = new ArrayList<Element>();
         assertEquals(listC,result);
     }
@@ -40,7 +42,7 @@ public class IntCharSorterTest {
     @Test
     public void shouldMergeOneElementArrayWithEmptyArray() {
         listA.add(sampleElements.get(0));
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         result.add(sampleElements.get(0));
         assertEquals(listC,result);
     }
@@ -49,7 +51,7 @@ public class IntCharSorterTest {
     public void shouldMergeOneElementArrays1() { //number,number
         listA.add(sampleElements.get(6));
         listB.add(sampleElements.get(4));
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         result.add(sampleElements.get(4));
         result.add(sampleElements.get(6));
         assertEquals(listC,result);
@@ -59,7 +61,7 @@ public class IntCharSorterTest {
     public void shouldMergeOneElementArrays2() { //char,number
         listA.add(sampleElements.get(6));
         listB.add(sampleElements.get(2));
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         result.add(sampleElements.get(6));
         result.add(sampleElements.get(2));
         assertEquals(listC,result);
@@ -69,7 +71,7 @@ public class IntCharSorterTest {
     public void shouldMergeOneElementArrays3() { //number,char
         listA.add(sampleElements.get(6));
         listB.add(sampleElements.get(1));
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         result.add(sampleElements.get(6));
         result.add(sampleElements.get(1));
         assertEquals(listC,result);
@@ -79,7 +81,7 @@ public class IntCharSorterTest {
     public void shouldMergeOneElementArrays4() { //char,char
         listA.add(sampleElements.get(3));
         listB.add(sampleElements.get(2));
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         result.add(sampleElements.get(2));
         result.add(sampleElements.get(3));
         assertEquals(listC,result);
@@ -100,7 +102,7 @@ public class IntCharSorterTest {
             new Element(4), new Element('c'), new Element(4), new Element(8), new Element('d')};
         result=new ArrayList<Element>(Arrays.asList(elems3));
 
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         assertEquals(listC,result);
     }
 
@@ -118,7 +120,7 @@ public class IntCharSorterTest {
             new Element('a'), new Element(2), new Element('b'),new Element(3), new Element('c'), new Element(4),
             new Element(4), new Element('c'), new Element(8), new Element(9), new Element('d')};
         result=new ArrayList<Element>(Arrays.asList(elems3));
-        listC = IntCharSorter.merge(listA, listB);
+        listC = sorter.merge(listA, listB);
         assertEquals(listC,result);
     }
 }
