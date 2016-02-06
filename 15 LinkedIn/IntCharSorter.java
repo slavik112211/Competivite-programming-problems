@@ -21,104 +21,128 @@ public class IntCharSorter
 		}
 		
 		public String toString(){
-			return (isNumber==true) ? Integer.toString(number) : ""+character;
+			return isNumber ? Integer.toString(number) : ""+character;
 		}
 	}
 	
 	
-  public static Element[] merge(Element[] listA, Element[] listB)
-  {
-	  int totalSize = listA.length+listB.length;
-	  int i, resultArrayIndex=0,leftIndex=0,rightIndex=0;
-	  Element left,right;
-	  Element[] result = new Element[totalSize];
-	  ArrayList<Integer> intPositions = new ArrayList<Integer>();
-	  ArrayList<Integer> charPositions = new ArrayList<Integer>();
-	  int intPositionsIterator=0, charPositionsIterator=0;
+  public static ArrayList<Element> merge(ArrayList<Element> listA, ArrayList<Element> listB){
+	  int totalSize = listA.size()+listB.size();
+	  int i, resultArrayIndex=0;
+	  Element leftEl1, leftEl2, rightEl1, rightEl2;
+	  ArrayList<Element> result = new ArrayList<Element>(totalSize);
+	  boolean[] intPositions=new boolean[totalSize];
+	  int iteratorLeft1=0, iteratorLeft2=0, iteratorRight1=0, iteratorRight2=0;
 	  
 	  //1. Determine positions of int/char
-	  for(i=0; i<listA.length;i++){
-		  if(listA[i].isNumber) intPositions.add(resultArrayIndex);
-		  else charPositions.add(resultArrayIndex);
+	  for(i=0; i<listA.size();i++){
+		  intPositions[resultArrayIndex] = listA.get(i).isNumber ? true : false;
 		  resultArrayIndex++;
 	  }
-	  for(i=0; i<listB.length;i++){
-		  if(listB[i].isNumber) intPositions.add(resultArrayIndex);
-		  else charPositions.add(resultArrayIndex);
+	  for(i=0; i<listB.size();i++){
+		  intPositions[resultArrayIndex] = listB.get(i).isNumber ? true : false;
 		  resultArrayIndex++;
 	  }
 	  
-	  //2. merge integers
-	  for(i=0;i<totalSize;i++){
-		  left = (leftIndex<listA.length) ? listA[leftIndex] : new Element(Integer.MAX_VALUE);
-		  right = (rightIndex<listB.length) ? listB[rightIndex] : new Element(Integer.MAX_VALUE);
-
-		  if(left.isNumber && right.isNumber){
-			  if(left.number<=right.number){
-				  result[intPositions.get(intPositionsIterator)]=left;
-				  leftIndex++;
-			  }else{
-				  result[intPositions.get(intPositionsIterator)]=right;
-				  rightIndex++;
+	  resultArrayIndex=0;
+	  while(resultArrayIndex<totalSize){
+		  leftEl1  = (iteratorLeft1<listA.size())  ? listA.get(iteratorLeft1)  : null;
+		  leftEl2  = (iteratorLeft2<listA.size())  ? listA.get(iteratorLeft2)  : null;
+		  rightEl1 = (iteratorRight1<listB.size()) ? listB.get(iteratorRight1) : null;
+		  rightEl2 = (iteratorRight2<listB.size()) ? listB.get(iteratorRight2) : null;
+		  
+		  //1. Current position in result[] requires a number
+		  if(intPositions[resultArrayIndex]){
+			  //a. One of the iterators is out of bounds
+			  if(leftEl1==null && rightEl1.isCharacter){
+				  iteratorRight1++;
+			  }else if(leftEl1==null && rightEl1.isNumber){
+				  result.add(rightEl1);
+				  iteratorRight1++;
+				  resultArrayIndex++;
+			  } else if(leftEl1.isCharacter && rightEl1==null){
+				  iteratorLeft1++;
+			  } else if(leftEl1.isNumber && rightEl1==null){
+				  result.add(leftEl1);
+				  iteratorLeft1++;
+				  resultArrayIndex++;
 			  }
-			  intPositionsIterator++;
-		  } else if(left.isNumber){
-			  rightIndex++;
-		  } else if(right.isNumber){
-			  leftIndex++;
-		  } else {
-			  leftIndex++;
-			  rightIndex++;
+			//b.both iterators are still within bounds
+			  else if(leftEl1.isNumber && rightEl1.isNumber){
+				  if(leftEl1.number<=rightEl1.number){
+					  result.add(leftEl1);
+					  iteratorLeft1++;
+				  }else{
+					  result.add(rightEl1);
+					  iteratorRight1++;
+				  }
+				  resultArrayIndex++;
+			  }else if(leftEl1.isCharacter && rightEl1.isCharacter){
+				  iteratorLeft1++;
+				  iteratorRight1++;
+			  }else if(leftEl1.isNumber && rightEl1.isCharacter){
+				  iteratorRight1++;
+			  }else if(leftEl1.isCharacter && rightEl1.isNumber){
+				  iteratorLeft1++;
+			  }
+		  }
+		  else{ //2. Current position in result[] requires a character
+			  
+			  //a. One of the iterators is out of bounds
+			  if(leftEl2==null && rightEl2.isCharacter){
+				  result.add(rightEl2);
+				  iteratorRight2++;
+				  resultArrayIndex++;
+			  }else if(leftEl2==null && rightEl2.isNumber){
+				  iteratorRight2++;
+			  } else if(leftEl2.isCharacter && rightEl2==null){
+				  result.add(leftEl2);
+				  iteratorLeft2++;
+				  resultArrayIndex++;
+			  } else if(leftEl2.isNumber && rightEl2==null){
+				  iteratorLeft2++;
+			  }
+			  //b.both iterators are still within bounds
+			  else if(leftEl2.isCharacter && rightEl2.isCharacter){
+				  if(leftEl2.character<=rightEl2.character){
+					  result.add(leftEl2);
+					  iteratorLeft2++;
+				  }else{
+					  result.add(rightEl2);
+					  iteratorRight2++;
+				  }
+				  resultArrayIndex++;
+			  }else if(leftEl2.isNumber && rightEl2.isNumber){
+				  iteratorLeft2++;
+				  iteratorRight2++;
+			  }else if(leftEl2.isNumber && rightEl2.isCharacter){
+				  iteratorLeft2++;
+			  }else if(leftEl2.isCharacter && rightEl2.isNumber){
+				  iteratorRight2++;
+			  }
 		  }
 	  }
-	  
-	  //3. merge chars
-	  leftIndex=0;
-	  rightIndex=0;
-	  for(i=0;i<totalSize;i++){
-		  left = (leftIndex<listA.length) ? listA[leftIndex] : new Element(Character.MAX_VALUE);
-		  right = (rightIndex<listB.length) ? listB[rightIndex] : new Element(Character.MAX_VALUE);
-
-		  if(left.isCharacter && right.isCharacter){
-			  if(left.character<=right.character){
-				  result[charPositions.get(charPositionsIterator)]=left;
-				  leftIndex++;
-			  }else{
-				  result[charPositions.get(charPositionsIterator)]=right;
-				  rightIndex++;
-			  }
-			  charPositionsIterator++;
-		  } else if(left.isCharacter){
-			  rightIndex++;
-		  } else if(right.isCharacter){
-			  leftIndex++;
-		  } else {
-			  leftIndex++;
-			  rightIndex++;
-		  }
-	  }
-	  
 	  return result;
   }
 
   
   public static void main(String[] args){
-	  Element[] listA = new Element[6];
-	  listA[0]=new Element('b');
-	  listA[1]=new Element(4);
-	  listA[2]=new Element('c');
-	  listA[3]=new Element(8);
-	  listA[4]=new Element('d');
-	  listA[5]=new Element(9);
+	  ArrayList<Element> listA = new ArrayList<Element>();
+	  listA.add(new Element('b'));
+	  listA.add(new Element(4));
+	  listA.add(new Element('c'));
+	  listA.add(new Element(8));
+	  listA.add(new Element('d'));
+	  listA.add(new Element(9));
 	  
-	  Element[] listB = new Element[5];
-	  listB[0]=new Element(2);
-	  listB[1]=new Element('a');
-	  listB[2]=new Element(3);
-	  listB[3]=new Element(4);
-	  listB[4]=new Element('c');
+	  ArrayList<Element> listB = new ArrayList<Element>();
+	  listB.add(new Element(2));
+	  listB.add(new Element('a'));
+	  listB.add(new Element(3));
+	  listB.add(new Element(4));
+	  listB.add(new Element('c'));
 	  
-	  Element[] listC = IntCharSorter.merge(listA, listB);
+	  ArrayList<Element> listC = IntCharSorter.merge(listA, listB);
 	  System.out.println(listC);
 	  //[a, 2, b, 3, c, 4, 4, c, 8, 9, d]
 	  
