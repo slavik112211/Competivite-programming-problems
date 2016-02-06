@@ -33,7 +33,6 @@ public class IntCharSorter
 		}
 	}
 	
-	
   public static ArrayList<Element> merge(ArrayList<Element> listA, ArrayList<Element> listB){
 	  int totalSize = listA.size()+listB.size();
 	  int i, resultArrayIndex=0;
@@ -61,23 +60,10 @@ public class IntCharSorter
 		  
 		  //1. Current position in result[] requires a number
 		  if(intPositions[resultArrayIndex]){
-			  //a. One of the iterators is out of bounds
-			  if(leftEl1==null && rightEl1.isCharacter){
-				  iteratorRight1++;
-			  }else if(leftEl1==null && rightEl1.isNumber){
-				  result.add(rightEl1);
-				  iteratorRight1++;
-				  resultArrayIndex++;
-			  } else if(leftEl1.isCharacter && rightEl1==null){
-				  iteratorLeft1++;
-			  } else if(leftEl1.isNumber && rightEl1==null){
-				  result.add(leftEl1);
-				  iteratorLeft1++;
-				  resultArrayIndex++;
-			  }
-			//b.both iterators are still within bounds
-			  else if(leftEl1.isNumber && rightEl1.isNumber){
-				  if(leftEl1.number<=rightEl1.number){
+			  if((leftEl1==null    && rightEl1.isNumber) || 
+				 (leftEl1.isNumber && rightEl1==null)    ||
+				 (leftEl1.isNumber && rightEl1.isNumber)){
+				  if(rightEl1==null || leftEl1.number<=rightEl1.number){
 					  result.add(leftEl1);
 					  iteratorLeft1++;
 				  }else{
@@ -85,34 +71,20 @@ public class IntCharSorter
 					  iteratorRight1++;
 				  }
 				  resultArrayIndex++;
+			  }else if((leftEl1==null || leftEl1.isNumber) && rightEl1.isCharacter){
+				  iteratorRight1++;
+			  }else if(leftEl1.isCharacter && (rightEl1==null || rightEl1.isNumber)){
+				  iteratorLeft1++;
 			  }else if(leftEl1.isCharacter && rightEl1.isCharacter){
 				  iteratorLeft1++;
 				  iteratorRight1++;
-			  }else if(leftEl1.isNumber && rightEl1.isCharacter){
-				  iteratorRight1++;
-			  }else if(leftEl1.isCharacter && rightEl1.isNumber){
-				  iteratorLeft1++;
 			  }
 		  }
 		  else{ //2. Current position in result[] requires a character
-			  
-			  //a. One of the iterators is out of bounds
-			  if(leftEl2==null && rightEl2.isCharacter){
-				  result.add(rightEl2);
-				  iteratorRight2++;
-				  resultArrayIndex++;
-			  }else if(leftEl2==null && rightEl2.isNumber){
-				  iteratorRight2++;
-			  } else if(leftEl2.isCharacter && rightEl2==null){
-				  result.add(leftEl2);
-				  iteratorLeft2++;
-				  resultArrayIndex++;
-			  } else if(leftEl2.isNumber && rightEl2==null){
-				  iteratorLeft2++;
-			  }
-			  //b.both iterators are still within bounds
-			  else if(leftEl2.isCharacter && rightEl2.isCharacter){
-				  if(leftEl2.character<=rightEl2.character){
+			  if((leftEl2.isCharacter && rightEl2 == null) ||
+				 (leftEl2 == null     && rightEl2.isCharacter) ||
+				 (leftEl2.isCharacter && rightEl2.isCharacter)){
+				  if(rightEl2==null || leftEl2.character<=rightEl2.character){
 					  result.add(leftEl2);
 					  iteratorLeft2++;
 				  }else{
@@ -120,12 +92,12 @@ public class IntCharSorter
 					  iteratorRight2++;
 				  }
 				  resultArrayIndex++;
+			  }else if(leftEl2.isNumber && (rightEl2==null || rightEl2.isCharacter)){
+				  iteratorLeft2++;
+			  }else if((leftEl2==null || leftEl2.isCharacter) && rightEl2.isNumber){
+				  iteratorRight2++;
 			  }else if(leftEl2.isNumber && rightEl2.isNumber){
 				  iteratorLeft2++;
-				  iteratorRight2++;
-			  }else if(leftEl2.isNumber && rightEl2.isCharacter){
-				  iteratorLeft2++;
-			  }else if(leftEl2.isCharacter && rightEl2.isNumber){
 				  iteratorRight2++;
 			  }
 		  }
