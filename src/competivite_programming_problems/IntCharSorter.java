@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 public class IntCharSorter
 {
-    private Integer iteratorLeft1=0, iteratorLeft2=0, iteratorRight1=0, iteratorRight2=0;
     public static class Element {
-        public enum Type {INTEGER, CHAR}
+        public enum Type {INTEGER, CHAR};
         public int number;
         public char character;
         public Boolean isNumber=false, isCharacter=false;
@@ -41,28 +40,17 @@ public class IntCharSorter
         int i, resultArrayIndex=0, compareResult;
         Element leftEl1, leftEl2, rightEl1, rightEl2;
         ArrayList<Element> result = new ArrayList<Element>(totalSize);
-        boolean[] intPositions=new boolean[totalSize];
-        iteratorLeft1=0; iteratorLeft2=0; iteratorRight1=0; iteratorRight2=0;
+        Element.Type currentPositionType;
+        int iteratorLeft1=0, iteratorLeft2=0, iteratorRight1=0, iteratorRight2=0;
 
-        //1. Determine positions of int/char
-        for(i=0; i<listA.size();i++){
-            intPositions[resultArrayIndex] = listA.get(i).isNumber ? true : false;
-            resultArrayIndex++;
-        }
-        for(i=0; i<listB.size();i++){
-            intPositions[resultArrayIndex] = listB.get(i).isNumber ? true : false;
-            resultArrayIndex++;
-        }
-
-        resultArrayIndex=0;
         while(resultArrayIndex<totalSize){
             leftEl1  = (iteratorLeft1<listA.size())  ? listA.get(iteratorLeft1)  : null;
             leftEl2  = (iteratorLeft2<listA.size())  ? listA.get(iteratorLeft2)  : null;
             rightEl1 = (iteratorRight1<listB.size()) ? listB.get(iteratorRight1) : null;
             rightEl2 = (iteratorRight2<listB.size()) ? listB.get(iteratorRight2) : null;
 
-            //1. Current position in result[] requires a number
-            if(intPositions[resultArrayIndex]){
+            currentPositionType=determinePositionType(resultArrayIndex,listA,listB);
+            if(currentPositionType==Element.Type.INTEGER){
                 if(areBothNull(leftEl1, rightEl1)) break;
                 if(areNumbers(leftEl1, rightEl1) || oneIsNullAndOtherIsNumber(leftEl1, rightEl1)){
                     compareResult=compareElements(Element.Type.INTEGER, leftEl1, rightEl1);
@@ -83,7 +71,7 @@ public class IntCharSorter
                     iteratorRight1++;
                 }
             }
-            else{ //2. Current position in result[] requires a character
+            else if(currentPositionType==Element.Type.CHAR){
                 if(areBothNull(leftEl2, rightEl2)) break;
                 else if(areCharacters(leftEl2,rightEl2) || oneIsNullAndOtherIsCharacter(leftEl2,rightEl2)){
                     compareResult=compareElements(Element.Type.CHAR, leftEl2, rightEl2);
@@ -150,6 +138,10 @@ public class IntCharSorter
             result=1;
         }
         return result;
+    }
+    private static Element.Type determinePositionType(int index, ArrayList<Element> left, ArrayList<Element> right){
+        Element currentEl=(index<left.size()) ? left.get(index) : right.get(index-left.size());
+        return currentEl.isNumber ? Element.Type.INTEGER : Element.Type.CHAR;
     }
     
     public static void main(String[] args){
